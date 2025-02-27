@@ -4,7 +4,7 @@ import json
 import os
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["https://roommate.fajarshiddiqqq.my.id"])
 
 
 @app.route("/", methods=["GET"])
