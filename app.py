@@ -93,7 +93,7 @@ def create_portfolio(auth):
     timestamp = int(time.time())
 
     for key, image in image_list.items():
-        filename = f"{new_id}_{timestamp}_{image['file'].filename}"
+        filename = f"{new_id}_{timestamp}_{image['file'].filename.replace(' ', '_')}"
         image["file"].save(os.path.join("storage/files", filename))
         portfolio_images.append(
             {
@@ -191,15 +191,13 @@ def update_portfolio(auth, id):
                         image["thumbnail"] = (
                             str(value.get("thumbnail", "false")).lower() == "true"
                         )
-                        remaining_filenames.add(
-                            image["file_name"]
-                        )  # Track existing image
+                        remaining_filenames.add(image["file_name"])
                         break
             elif value["status"] == "new":
                 file = request.files.get(key)
-                if not file:
+                if not file or not file.filename:
                     return jsonify(error="file not found"), 400
-                filename = f"{id}_{int(time.time())}_{file.filename}"
+                filename = f"{id}_{int(time.time())}_{file.filename.replace(' ', '_')}"
                 file.save(os.path.join("storage/files", filename))
                 portfolio["images"].append(
                     {
@@ -209,7 +207,7 @@ def update_portfolio(auth, id):
                         == "true",
                     }
                 )
-                remaining_filenames.add(filename)  # Track new image
+                remaining_filenames.add(filename)
 
         # Identify and delete removed images
         deleted_images = [
